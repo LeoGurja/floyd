@@ -1,0 +1,16 @@
+{
+  "files.associations": {
+    ".sequelizerc": "javascript",
+    "**/templates/*.html": "django-html",
+    "**/templates/*": "django-txt",
+    "**/requirements{/**,*}.{txt,in}": "pip-requirements",
+    "main.h": "c",
+    "stdlib.h": "c",
+    "random": "c",
+    "*.tcc": "c",
+    "thread": "c",
+    "cmath": "c",
+    "complex": "c",
+    "type_traits": "c"
+  }
+}

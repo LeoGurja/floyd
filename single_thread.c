@@ -68,12 +68,12 @@ void floydWarshall(int *matrix, int n)
 int main(int argc, char **argv)
 {
   clock_t start, end;
-  int n = 4;
+  int n = 400;
 
   start = clock();
   int *matrix = rand_matrix(n);
   floydWarshall(matrix, n);
   end = clock();
-  printf("\nTempo de execução - %.2f ms", ((double)end - start));
+  printf("\nTempo de execução - %.2f ms", ((double)end - start) * 1000 / CLOCKS_PER_SEC);
   return 0;
 }

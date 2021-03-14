@@ -11,6 +11,7 @@
     "thread": "c",
     "cmath": "c",
     "complex": "c",
-    "type_traits": "c"
+    "type_traits": "c",
+    "mpi.h": "c"
   }
 }

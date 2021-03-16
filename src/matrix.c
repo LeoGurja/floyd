@@ -12,17 +12,6 @@ int **init_matrix(int m, int n)
   return matrix;
 }
 
-int **copy_matrix(int **matrix, int n)
-{
-  int **copy = init_matrix(n, n);
-
-  for (int i = 0; i < n; i++)
-    for (int j = 0; j < n; j++)
-      copy[i][j] = matrix[i][j];
-
-  return copy;
-}
-
 int **rand_matrix(int n)
 {
   int **matrix = init_matrix(n, n);
@@ -46,74 +35,23 @@ int **rand_matrix(int n)
   return matrix;
 }
 
-void print_matrix(int **matrix, int n)
+void fprint_matrix(char *filename, int **matrix, int matrix_size)
 {
-  for (int i = 0; i < n; i++)
+  FILE *fptr = fopen(filename, "w");
+  for (int i = 0; i < matrix_size; i++)
   {
-    for (int j = 0; j < n; j++)
+    for (int j = 0; j < matrix_size; j++)
     {
       if (matrix[i][j] == INF)
       {
-        printf("INF\t");
+        fprintf(fptr, "INF\t");
       }
       else
       {
-        printf("%d\t", matrix[i][j]);
+        fprintf(fptr, "%d\t", matrix[i][j]);
       }
     }
-    printf("\n");
+    fprintf(fptr, "\n");
   }
-  printf("\n");
-}
-
-void println(int *line, int n)
-{
-  for (int i = 0; i < n; i++)
-  {
-    if (line[i] == INF)
-    {
-      printf("INF\t");
-    }
-    else
-    {
-      printf("%d\t", line[i]);
-    }
-  }
-  printf("\n");
-}
-
-void fprintln(int *line, int n, FILE *output)
-{
-  for (int i = 0; i < n; i++)
-  {
-    if (line[i] == INF)
-    {
-      fprintf(output, "INF\t");
-    }
-    else
-    {
-      fprintf(output, "%d\t", line[i]);
-    }
-  }
-  fprintf(output, "\n");
-}
-
-void fprint_matrix(int **matrix, int m, int n, FILE *output)
-{
-  for (int i = 0; i < m; i++)
-  {
-    for (int j = 0; j < n; j++)
-    {
-      if (matrix[i][j] == INF)
-      {
-        fprintf(output, "INF\t");
-      }
-      else
-      {
-        fprintf(output, "%d\t", matrix[i][j]);
-      }
-    }
-    fprintf(output, "\n");
-  }
-  fprintf(output, "\n");
+  fclose(fptr);
 }

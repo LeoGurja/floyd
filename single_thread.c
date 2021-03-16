@@ -31,26 +31,6 @@ int *rand_matrix(int n)
   return matrix;
 }
 
-void print_matrix(int *matrix, int m, int n)
-{
-  for (int i = 0; i < m; i++)
-  {
-    for (int j = 0; j < n; j++)
-    {
-      if (matrix[i * n + j] == INF)
-      {
-        printf("INF\t");
-      }
-      else
-      {
-        printf("%d\t", matrix[i * n + j]);
-      }
-    }
-    printf("\n");
-  }
-  printf("\n");
-}
-
 void floydWarshall(int *matrix, int n)
 {
   for (int k = 0; k < n; k++)

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "include/matrix.h"
+#include "include/utils.h"
 
 #define BLOCK_SIZE(matrix_size, number_of_processes) ((matrix_size) / (number_of_processes))
 #define BLOCK_START(rank, number_of_processes, matrix_size) ((rank)*BLOCK_SIZE(matrix_size, number_of_processes))
@@ -34,7 +35,8 @@ int *block_line(int rank, int number_of_processes, int matrix_size)
   return list;
 }
 
-// [[1,2], [2,4]]  = [1,2,2,4]
+// Transforma um bloco bi-dimensional em um array uni-dimensional
+// [[1,2], [2,4]]  => [1,2,2,4]
 int *serialize_block(int **matrix, int *lines, int matrix_size, FILE *output)
 {
   int *block = (int *)malloc(sizeof(int) * (lines[1] - lines[0]) * matrix_size);
@@ -50,6 +52,7 @@ int *serialize_block(int **matrix, int *lines, int matrix_size, FILE *output)
   return block;
 }
 
+// Transforma um array uni-dimensional em um bloco uni-dimensional
 int **deserialize_block(int *block, int *lines, int matrix_size, FILE *output)
 {
   int block_size = lines[1] - lines[0];
@@ -88,16 +91,19 @@ void sync(int **matrix, int matrix_size, int rank, int number_of_processes, FILE
   for (int i = 0; i < number_of_processes; i++)
   {
     lines = block_line(i, number_of_processes, matrix_size);
+
+    // Caso seja o dono do bloco
     if (i == rank)
     {
+      // Serializa o bloco para enviar aos outros processos
       block = serialize_block(matrix, lines, matrix_size, output);
     }
     else
     {
+      // Aloca memória pra receber um bloco de outro processo
       block = (int *)malloc(sizeof(int) * matrix_size * (lines[1] - lines[0]));
     }
-    //print_matrix(matrix, matrix_size);
-    //fflush(stdout);
+
     //Envia as alterações locais e recebe as globais
     MPI_Bcast(block, matrix_size * (lines[1] - lines[0]), MPI_INT, i, MPI_COMM_WORLD);
 
@@ -108,9 +114,10 @@ void sync(int **matrix, int matrix_size, int rank, int number_of_processes, FILE
     * 1 5 9 0
     */
 
-    // começo do problema
+    // Caso não seja o dono do bloco
     if (i != rank)
     {
+      // Desserializa e insere os valores novos na matriz
       tmp = deserialize_block(block, lines, matrix_size, output);
       for (int line = 0; line < lines[1] - lines[0]; line++)
       {
@@ -120,7 +127,6 @@ void sync(int **matrix, int matrix_size, int rank, int number_of_processes, FILE
         }
       }
     }
-    // fim do problema
   }
 }
 
@@ -151,46 +157,39 @@ P4 -- -- -- ++ -- ++ --
 
 */
 
+// Retorna o maior tempo entre os processes em milissegundos
+double calculate_max_time(double *time)
+{
+  double max_time;
+  MPI_Reduce(&time, &max_time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+  return max_time * 1000;
+}
+
 void main(int argc, char **argv)
 {
   double time, max_time;
   int number_of_processes;
   int rank;
-  int n = 2000;
-  FILE *fptr;
-
-  int **matrix = rand_matrix(n);
+  size_t n = 10;
+  int matrix[n][n];
+  int **matrix = read_matrix_from_file(n, n, matrix, "benchmark/matrix01_10");
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &number_of_processes);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  /*int *lines = block_line(rank, number_of_processes, n);
-  printf(
-      "sou o p%d -> %d até %d\n",
-      rank, lines[0], lines[1]);
-  */
-
   if (rank == 0)
-  {
-    fptr = fopen("input.log", "w");
-    fprint_matrix(matrix, n, n, fptr);
-    fclose(fptr);
-  }
-  MPI_Barrier(MPI_COMM_WORLD);
+    fprint_matrix("input.log", matrix, n);
+
   time = -MPI_Wtime();
   floydWarshall(matrix, number_of_processes, rank, n);
   time += MPI_Wtime();
-  MPI_Reduce(&time, &max_time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
   if (rank == 0)
   {
-    fptr = fopen("output.log", "w");
-    fprint_matrix(matrix, n, n, fptr);
-    fclose(fptr);
+    fprint_matrix("output.log", matrix, n);
+    printf("\nTempo de execução - %lfms\n", calculate_max_time(&time));
   }
-
-  printf("\nTempo de execução - %lfms\n", time * 1000);
 
   MPI_Finalize();
 }

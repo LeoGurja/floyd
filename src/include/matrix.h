@@ -5,14 +5,8 @@
 // inicia uma matriz vazia
 int **init_matrix(int m, int n);
 
-int **copy_matrix(int **matrix, int n);
-
+// inicia uma matriz aleatória
 int **rand_matrix(int n);
 
-void print_matrix(int **matrix, int n);
-
-void println(int *line, int n);
-
-void fprint_matrix(int **matrix, int m, int n, FILE *output);
-
-void fprintln(int *line, int n, FILE *output);
+// imprime a matriz em um arquivo
+void fprint_matrix(char *filename, int **matrix, int matrix_size);

@@ -103,7 +103,6 @@ void sync(int **matrix, int matrix_size, int rank, int number_of_processes, FILE
       // Aloca memória pra receber um bloco de outro processo
       block = (int *)malloc(sizeof(int) * matrix_size * (lines[1] - lines[0]));
     }
-
     //Envia as alterações locais e recebe as globais
     MPI_Bcast(block, matrix_size * (lines[1] - lines[0]), MPI_INT, i, MPI_COMM_WORLD);
 
@@ -157,20 +156,12 @@ P4 -- -- -- ++ -- ++ --
 
 */
 
-// Retorna o maior tempo entre os processes em milissegundos
-double calculate_max_time(double *time)
-{
-  double max_time;
-  MPI_Reduce(&time, &max_time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-  return max_time * 1000;
-}
-
 void main(int argc, char **argv)
 {
   double time, max_time;
   int number_of_processes;
   int rank;
-  int n = 10;
+  int n = 500;
   int **matrix;
 
   MPI_Init(&argc, &argv);
@@ -178,18 +169,19 @@ void main(int argc, char **argv)
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   matrix = init_matrix(n, n);
-  read_matrix_from_file(n, matrix, "benchmark/matrix01_10");
+  read_matrix_from_file(n, matrix, "benchmark/matrix06_500");
   if (rank == 0)
     fprint_matrix("input.txt", matrix, n);
 
+  MPI_Barrier(MPI_COMM_WORLD);
   time = -MPI_Wtime();
   floydWarshall(matrix, number_of_processes, rank, n);
   time += MPI_Wtime();
+  MPI_Reduce(&time, &max_time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
   if (rank == 0)
   {
-    fprint_matrix("output.txt", matrix, n);
-    printf("\nTempo de execução - %lfms\n", calculate_max_time(&time));
+    printf("\nTempo de execução - %lfms\n", max_time * 1000);
   }
 
   MPI_Finalize();

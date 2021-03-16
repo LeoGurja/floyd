@@ -161,7 +161,7 @@ void main(int argc, char **argv)
   double time, max_time;
   int number_of_processes;
   int rank;
-  int n = 500;
+  int n = atoi(argv[1]);
   int **matrix;
 
   MPI_Init(&argc, &argv);
@@ -169,7 +169,7 @@ void main(int argc, char **argv)
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
   matrix = init_matrix(n, n);
-  read_matrix_from_file(n, matrix, "benchmark/matrix06_500");
+  read_matrix_from_file(n, matrix, argv[2]);
   if (rank == 0)
     fprint_matrix("input.log", matrix, n);
 

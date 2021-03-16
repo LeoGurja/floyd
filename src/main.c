@@ -171,7 +171,7 @@ void main(int argc, char **argv)
   matrix = init_matrix(n, n);
   read_matrix_from_file(n, matrix, "benchmark/matrix06_500");
   if (rank == 0)
-    fprint_matrix("input.txt", matrix, n);
+    fprint_matrix("input.log", matrix, n);
 
   MPI_Barrier(MPI_COMM_WORLD);
   time = -MPI_Wtime();
@@ -181,6 +181,7 @@ void main(int argc, char **argv)
 
   if (rank == 0)
   {
+    fprint_matrix("output.log", matrix, n);
     printf("\nTempo de execução - %lfms\n", max_time * 1000);
   }
 

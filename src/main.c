@@ -170,16 +170,17 @@ void main(int argc, char **argv)
   double time, max_time;
   int number_of_processes;
   int rank;
-  size_t n = 10;
-  int matrix[n][n];
-  int **matrix = read_matrix_from_file(n, n, matrix, "benchmark/matrix01_10");
+  int n = 10;
+  int **matrix;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &number_of_processes);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+  matrix = init_matrix(n, n);
+  read_matrix_from_file(n, matrix, "benchmark/matrix01_10");
   if (rank == 0)
-    fprint_matrix("input.log", matrix, n);
+    fprint_matrix("input.txt", matrix, n);
 
   time = -MPI_Wtime();
   floydWarshall(matrix, number_of_processes, rank, n);
@@ -187,7 +188,7 @@ void main(int argc, char **argv)
 
   if (rank == 0)
   {
-    fprint_matrix("output.log", matrix, n);
+    fprint_matrix("output.txt", matrix, n);
     printf("\nTempo de execução - %lfms\n", calculate_max_time(&time));
   }
 

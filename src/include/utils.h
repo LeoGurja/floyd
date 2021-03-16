@@ -1,4 +1,5 @@
 
 #include <stdio.h>
+#include <stdlib.h>
 
-int read_matrix_from_file(size_t rows, size_t cols, int (*a)[cols], const char *filename);
+void read_matrix_from_file(int matrix_size, int **a, const char *filename);

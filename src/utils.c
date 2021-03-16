@@ -1,19 +1,21 @@
 #include "include/utils.h"
 
-int read_matrix_from_file(size_t rows, size_t cols, int (*a)[cols], const char *filename)
+void read_matrix_from_file(int matrix_size, int **a, const char *filename)
 {
-
+  int tmp;
   FILE *pf;
   pf = fopen(filename, "r");
   if (pf == NULL)
-    return 0;
+    exit(1);
 
-  for (size_t i = 0; i < rows; ++i)
+  for (int i = 0; i < matrix_size; ++i)
   {
-    for (size_t j = 0; j < cols; ++j)
-      fscanf(pf, "%d", a[i] + j);
+    for (int j = 0; j < matrix_size; ++j)
+    {
+      fscanf(pf, "%d ", &tmp);
+      a[i][j] = tmp;
+    }
   }
 
   fclose(pf);
-  return 1;
 }

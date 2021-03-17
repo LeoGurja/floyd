@@ -12,3 +12,6 @@ clean:
 	-rm *.o
 	-rm *.a
 	-rm src/*.o
+
+single:
+	gcc single_thread.c src/matrix.c src/utils.c -o single.out

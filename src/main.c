@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 #include "include/matrix.h"
 #include "include/utils.h"
 
@@ -78,6 +79,7 @@ P4 -- -- -- ++ -- ++ --
 void main(int argc, char **argv)
 {
   double time, max_time;
+  clock_t start, end;
   int n = atoi(argv[1]);
   int **matrix;
   int num_threads = omp_get_num_threads();
@@ -86,11 +88,10 @@ void main(int argc, char **argv)
   read_matrix_from_file(n, matrix, argv[2]);
   fprint_matrix("input.log", matrix, n);
 
-  time = -omp_get_wtime();
-
+  start = clock();
   floydWarshall(matrix, n);
-  time += omp_get_wtime();
+  end = clock();
 
   fprint_matrix("output.log", matrix, n);
-  printf("\nTempo de execução - %lfms\n", max_time * 1000);
+  printf("\nTempo de execução - %lfms\n", ((double)end - start) * 1000 / CLOCKS_PER_SEC);
 }

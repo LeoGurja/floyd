@@ -2,10 +2,10 @@ exec = main.out
 sources = $(wildcard src/*.c)
 objects = $(sources: .c=.o)
 $(exec): $(objects)
-	mpicc $(objects) -o $(exec)
+	gcc $(objects) -o $(exec) -fopenmp
 
 %.o: %.c include/%.h
-	mpicc -c $< -o $@
+	gcc -c $< -o $@
 
 clean:
 	-rm *.out

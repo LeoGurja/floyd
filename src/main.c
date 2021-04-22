@@ -37,11 +37,9 @@ int *block_line(int rank, int number_of_processes, int matrix_size)
 }
 
 // Etapa de cálculo de sua sub-matriz (bloco)
-void calculate(int **matrix, int k, int matrix_size)
+void calculate(int **matrix, int k, int *lines, int matrix_size)
 {
-  int id = omp_get_thread_num();
-  int num_threads = omp_get_num_threads();
-  int *lines = block_line(id, num_threads, matrix_size);
+
   for (int i = lines[0]; i < lines[1]; i++)
   {
     for (int j = 0; j < matrix_size; j++)
@@ -54,11 +52,14 @@ void calculate(int **matrix, int k, int matrix_size)
 void floydWarshall(int **matrix, int matrix_size)
 {
   // Percorre todas as k possibilidades de caminho intermediário
-  for (int k = 0; k < matrix_size; k++)
+
+#pragma omp parallel shared(matrix, matrix_size)
   {
-#pragma omp parallel shared(matrix, k, matrix_size)
+    int *lines = block_line(omp_get_thread_num(), omp_get_num_threads(), matrix_size);
+    for (int k = 0; k < matrix_size; k++)
     {
-      calculate(matrix, k, matrix_size);
+      calculate(matrix, k, lines, matrix_size);
+#pragma omp barrier
     }
   }
 }

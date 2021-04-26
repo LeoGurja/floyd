@@ -27,6 +27,7 @@ substitua p pelo número de processos desejado
 substitua n pelo tamanho de matriz desejado
 substitua p pelo número de threads desejado
 ```bash
+  git checkout omp
   make single
   n=4
   p=2

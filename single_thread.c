@@ -1,4 +1,3 @@
-#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "src/include/matrix.h"
@@ -22,16 +21,11 @@ void floydWarshall(int **matrix, int n)
 
 int main(int argc, char **argv)
 {
-  clock_t start, end;
   int n = atoi(argv[1]);
 
-  start = clock();
   int **matrix = init_matrix(n, n);
 
   read_matrix_from_file(n, matrix, argv[2]);
   floydWarshall(matrix, n);
-  end = clock();
-  printf("\nTempo de execução - %.2f ms", ((double)end - start) * 1000 / CLOCKS_PER_SEC);
-  fflush(stdout);
   return 0;
 }
